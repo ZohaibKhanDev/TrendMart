@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "710132802460",
+    "project_id": "e-comers-ae80b",
+    "storage_bucket": "e-comers-ae80b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:710132802460:android:5cf0ad4f79237834315e59",
+        "android_client_info": {
+          "package_name": "com.example.trendmart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoow8LdMG9KqB2mT_UvJ99E3_WNL26xU4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

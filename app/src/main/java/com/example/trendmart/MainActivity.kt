@@ -28,8 +28,7 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             TrendMartTheme {
-                val navController= rememberNavController()
-              SignUp(navController)
+               NavEntry()
             }
         }
     }

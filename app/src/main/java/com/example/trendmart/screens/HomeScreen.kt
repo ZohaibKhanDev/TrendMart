@@ -2,10 +2,10 @@ package com.example.trendmart.screens
 
 import android.net.Uri
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,12 +17,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -32,8 +34,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -56,7 +56,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -70,13 +69,12 @@ import coil.compose.AsyncImage
 import com.example.trendmart.R
 import com.example.trendmart.navigation.Screen
 import com.example.trendmart.restapi.MainViewModel
-import com.example.trendmart.restapi.Prodect
 import com.example.trendmart.restapi.ProdectItem
 import com.example.trendmart.restapi.ResultState
 import com.example.trendmart.roomdatabase.Fav
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(navController: NavController) {
     var searchBar by remember { mutableStateOf(false) }
@@ -120,37 +118,35 @@ fun HomeScreen(navController: NavController) {
                         unfocusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
                         focusedIndicatorColor = Color.White,
                         unfocusedIndicatorColor = Color.White
-                    ), singleLine = true, textStyle = TextStyle(
+                    ),
+                    singleLine = true,
+                    textStyle = TextStyle(
                         fontSize = 15.sp
-                    ), trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Clear,
+                    ),
+                    trailingIcon = {
+                        Icon(imageVector = Icons.Default.Clear,
                             contentDescription = "",
                             modifier = Modifier.clickable { searchBar = false })
-                    }
-                )
+                    })
             }
         }, navigationIcon = {
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .width(32.dp).clickable { navController.navigate(Screen.MainScreen.route) }
-                    .height(32.dp)
-                    .background(Color.LightGray.copy(alpha = 0.70f)),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier
+                .clip(CircleShape)
+                .width(32.dp)
+                .clickable { navController.navigate(Screen.MainScreen.route) }
+                .height(32.dp)
+                .background(Color.LightGray.copy(alpha = 0.70f)),
+                contentAlignment = Alignment.Center) {
                 Icon(imageVector = Icons.Default.Menu, contentDescription = "")
             }
         }, actions = {
-            Box(
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .width(32.dp)
-                    .clickable { searchBar = true }
-                    .height(32.dp)
-                    .background(Color.LightGray.copy(alpha = 0.70f)),
-                contentAlignment = Alignment.Center
-            ) {
+            Box(modifier = Modifier
+                .clip(CircleShape)
+                .width(32.dp)
+                .clickable { searchBar = true }
+                .height(32.dp)
+                .background(Color.LightGray.copy(alpha = 0.70f)),
+                contentAlignment = Alignment.Center) {
                 Icon(imageVector = Icons.Default.Search, contentDescription = "")
             }
         })
@@ -166,7 +162,8 @@ fun HomeScreen(navController: NavController) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(60.dp),
                         color = Color.LightGray,
-                        trackColor = Color.Red, strokeCap = StrokeCap.Butt
+                        trackColor = Color.Red,
+                        strokeCap = StrokeCap.Butt
                     )
                 }
             }
@@ -192,104 +189,59 @@ fun HomeScreen(navController: NavController) {
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(8.dp)
                     )
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState())
-                            .padding(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(15.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    val images = listOf(
+                        Banner(R.drawable.bags),
+                        Banner(R.drawable.login),
+                        Banner(R.drawable.backcolor),
+                    )
+                    val pagerState = rememberPagerState(pageCount = {
+
+                        images.size
+                    })
+
+                    HorizontalPager(
+                        state = pagerState,
                     ) {
                         Box(
                             modifier = Modifier
-                                .width(285.dp)
-                                .height(130.dp), contentAlignment = Alignment.Center
+                                .size(100.dp)
+                                .background(Color.LightGray),
+                            contentAlignment = Alignment.Center
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.backcolor),
-                                contentDescription = "",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop,
-                            )
-
-                            Text(
-                                text = "20% OFF DURING THE WEEKEND",
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(
-                                    bottom = 60.dp,
-                                    end = 50.dp,
-                                    start = 4.dp
-                                )
-                            )
-
-                            Button(
-                                onClick = { /*TODO*/ },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-                                    contentColor = Color(0XFFF17547)
-                                ), modifier = Modifier.padding(top = 70.dp, end = 150.dp)
-                            ) {
-                                Text(text = "Get Now")
-                            }
-
-                            Image(
-                                painter = painterResource(id = R.drawable.bags),
-                                contentDescription = "",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .padding(start = 135.dp)
-                                    .size(150.dp)
+                                painter = painterResource(id = images[0].pic),
+                                contentDescription = ""
                             )
                         }
 
-                        Box(
-                            modifier = Modifier
-                                .width(285.dp)
-                                .height(130.dp), contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.backcolor),
-                                contentDescription = "",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop, colorFilter = ColorFilter.tint(
-                                    Color.Blue
-                                )
-                            )
 
-                            Text(
-                                text = "20% OFF DURING THE WEEKEND",
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(
-                                    bottom = 60.dp,
-                                    end = 50.dp,
-                                    start = 4.dp
-                                )
-                            )
+                    }
 
-                            Button(
-                                onClick = { /*TODO*/ },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Green,
-                                    contentColor = Color.White
-                                ), modifier = Modifier.padding(top = 70.dp, end = 150.dp)
-                            ) {
-                                Text(text = "Get Now")
-                            }
 
-                            Image(
-                                painter = painterResource(id = R.drawable.bags),
-                                contentDescription = "",
-                                contentScale = ContentScale.Crop,
+
+                    Row(
+                        Modifier
+                            .wrapContentHeight()
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        repeat(pagerState.pageCount) { iteration ->
+                            val color =
+                                if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                            Box(
                                 modifier = Modifier
-                                    .padding(start = 135.dp)
-                                    .size(150.dp)
+                                    .padding(2.dp)
+                                    .clip(CircleShape)
+                                    .background(color)
+                                    .size(16.dp)
                             )
                         }
                     }
+
+
+
+
                     Spacer(modifier = Modifier.height(10.dp))
                     Row(
                         modifier = Modifier
@@ -306,7 +258,8 @@ fun HomeScreen(navController: NavController) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "",
-                            tint = Color(0XFFF17547), modifier = Modifier.size(30.dp)
+                            tint = Color(0XFFF17547),
+                            modifier = Modifier.size(30.dp)
                         )
                     }
                     LazyVerticalGrid(
@@ -336,9 +289,7 @@ fun HomeScreen(navController: NavController) {
 
 @Composable
 fun ProdectItem(
-    prodectItem: ProdectItem,
-    onSeeMoreClick: () -> Unit,
-    navController: NavController
+    prodectItem: ProdectItem, onSeeMoreClick: () -> Unit, navController: NavController
 ) {
     val viewModel: MainViewModel = koinInject()
 
@@ -359,8 +310,7 @@ fun ProdectItem(
                 .padding(8.dp)
         ) {
             Box {
-                AsyncImage(
-                    model = prodectItem.image,
+                AsyncImage(model = prodectItem.image,
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -372,8 +322,7 @@ fun ProdectItem(
                                 "${Screen.ProductDetail.route}/${prodectItem.title}/$encodedImage/${prodectItem.price}/$encodedDescription/${prodectItem.category}/${prodectItem.rating.rate}"
                             )
                         }
-                        .height(118.dp)
-                )
+                        .height(118.dp))
                 Box(
                     modifier = Modifier
                         .clip(CircleShape)
@@ -382,16 +331,15 @@ fun ProdectItem(
                     contentAlignment = Alignment.Center
                 ) {
                     if (fav) {
-                        Icon(
-                            imageVector = Icons.Default.Favorite,
+                        Icon(imageVector = Icons.Default.Favorite,
                             contentDescription = "",
-                            tint = Color.Red, modifier = Modifier.clickable { fav = !fav }
-                        )
+                            tint = Color.Red,
+                            modifier = Modifier.clickable { fav = !fav })
                     } else {
-                        Icon(
-                            imageVector = Icons.Default.FavoriteBorder,
+                        Icon(imageVector = Icons.Default.FavoriteBorder,
                             contentDescription = "",
-                            tint = Color.Red, modifier = Modifier.clickable {
+                            tint = Color.Red,
+                            modifier = Modifier.clickable {
                                 fav = !fav
                                 val favourite = Fav(
                                     null,
@@ -403,8 +351,7 @@ fun ProdectItem(
                                     prodectItem.category
                                 )
                                 viewModel.Insert(favourite)
-                            }
-                        )
+                            })
                     }
 
                 }
@@ -419,7 +366,8 @@ fun ProdectItem(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "$${prodectItem.price}", modifier = Modifier
+                text = "$${prodectItem.price}",
+                modifier = Modifier
                     .align(Alignment.Start)
                     .padding(start = 5.dp)
             )
@@ -437,5 +385,7 @@ fun ProdectItem(
     }
 }
 
-
+data class Banner(
+    val pic: Int
+)
 

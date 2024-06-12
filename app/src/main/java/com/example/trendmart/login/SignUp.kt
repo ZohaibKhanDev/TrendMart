@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.LockPerson
@@ -35,6 +37,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -66,6 +70,16 @@ fun SignUp(navController: NavController) {
     var isLoading by remember {
         mutableStateOf(false)
     }
+    var visibility by remember {
+        mutableStateOf(false)
+    }
+    var visibility1 by remember {
+        mutableStateOf(false)
+    }
+    var Error by remember {
+        mutableStateOf(false)
+    }
+
     if (isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator(color = Color.Gray, trackColor = Color.Red)
@@ -98,7 +112,13 @@ fun SignUp(navController: NavController) {
                 )
             }, textStyle = TextStyle(
                 fontSize = 16.sp
-            )
+            ), isError = Error, supportingText = {
+                if (Error) {
+                    if (Name.isEmpty()) {
+                        Text(text = "please enter name")
+                    }
+                }
+            }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -112,7 +132,13 @@ fun SignUp(navController: NavController) {
                 )
             }, textStyle = TextStyle(
                 fontSize = 16.sp
-            )
+            ), isError = Error, supportingText = {
+                if (Error) {
+                    if (email.isEmpty()) {
+                        Text(text = "please enter email")
+                    }
+                }
+            }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -126,7 +152,22 @@ fun SignUp(navController: NavController) {
                 )
             }, textStyle = TextStyle(
                 fontSize = 16.sp
-            )
+            ), trailingIcon = {
+                if (passwrord >= 1.toString()) {
+                    Icon(
+                        imageVector = if (visibility) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                        contentDescription = "",
+                        modifier = Modifier.clickable { visibility = !visibility })
+                }
+            },
+                visualTransformation = if (visibility) VisualTransformation.None else PasswordVisualTransformation(),
+                singleLine = true, isError = Error, supportingText = {
+                    if (Error) {
+                        if (passwrord <= (8).toString()) {
+                            Text(text = "Enter 8 Words Password")
+                        }
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -140,13 +181,28 @@ fun SignUp(navController: NavController) {
                 )
             }, textStyle = TextStyle(
                 fontSize = 16.sp
-            )
-            )
+            ), trailingIcon = {
+                if (confirmPassword >= 1.toString()) {
+                    Icon(
+                        imageVector = if (visibility1) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                        contentDescription = "",
+                        modifier = Modifier.clickable { visibility1 = !visibility1 })
+                }
+            },
+                visualTransformation = if (visibility1) VisualTransformation.None else PasswordVisualTransformation(),
+                singleLine = true, isError = Error, supportingText = {
+                    if (Error) {
+                        if (passwrord != confirmPassword) {
+                            Text(text = "password not match")
+                        }
+                    }
+                })
 
             Spacer(modifier = Modifier.height(23.dp))
-            if (passwrord <= 8.toString() && email.isEmpty() && passwrord != confirmPassword) {
+            if (passwrord <= 8.toString() && email.isEmpty() && passwrord != confirmPassword && Name.isEmpty() && confirmPassword.isEmpty() && confirmPassword <= 8.toString()) {
                 ElevatedButton(
                     onClick = {
+                        Error = !Error
                         Toast.makeText(
                             context,
                             "Please Enter Email And Password",
@@ -208,13 +264,19 @@ fun SignUp(navController: NavController) {
                     Text(text = "Login")
                 }
             }
-            
-            
-            Row (modifier = Modifier
-                .fillMaxWidth()
-                .padding(40.dp), verticalAlignment = Alignment.CenterVertically){
+
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(40.dp), verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(text = "Already have an account?")
-                Text(text = "Login here", fontWeight = FontWeight.Bold, fontSize = 16.sp, modifier = Modifier.clickable {  })
+                Text(
+                    text = "Login here",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    modifier = Modifier.clickable { })
             }
         }
     }

@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.trendmart.login.Login
 import com.example.trendmart.login.MainScreen
+import com.example.trendmart.login.SignUp
 import com.example.trendmart.navigation.NavEntry
 import com.example.trendmart.restapi.appModule
 import com.example.trendmart.ui.theme.TrendMartTheme
@@ -28,7 +29,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TrendMartTheme {
                 val navController= rememberNavController()
-              Login(navController)
+              SignUp(navController)
             }
         }
     }

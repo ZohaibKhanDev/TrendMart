@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -110,39 +111,47 @@ fun FavouriteScreen(navController: NavController) {
 
     Scaffold(topBar = {
         LargeTopAppBar(title = {
-            Row(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceAround
             ) {
-                OutlinedTextField(value = search, onValueChange = {
-                    search = it
-                }, placeholder = {
-                    Text(text = "Search", fontSize = 14.sp)
-                }, modifier = Modifier
-                    .height(50.dp)
-                    .width(300.dp), textStyle = TextStyle(
-                    fontSize = 15.sp
-                ), colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
-                    unfocusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
-                ), trailingIcon = {
-                    Icon(imageVector = Icons.Outlined.Search, contentDescription = "")
-                })
+                Text(text = "Favourite")
 
-                Icon(
-                    imageVector = Icons.Outlined.FilterAlt,
-                    contentDescription = "",
-                    modifier = Modifier.size(50.dp)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = 1.dp),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OutlinedTextField(value = search, onValueChange = {
+                        search = it
+                    }, placeholder = {
+                        Text(text = "Search", fontSize = 14.sp)
+                    }, modifier = Modifier
+                        .height(50.dp)
+                        .width(300.dp), textStyle = TextStyle(
+                        fontSize = 15.sp
+                    ), colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
+                        unfocusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
+                    ), trailingIcon = {
+                        Icon(imageVector = Icons.Outlined.Search, contentDescription = "")
+                    })
+
+                    Icon(
+                        imageVector = Icons.Outlined.FilterAlt,
+                        contentDescription = "",
+                        modifier = Modifier.size(50.dp)
+                    )
+                }
             }
         })
     }) {
-        if (isLoaing){
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+        if (isLoaing) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = Color.Red)
             }
-        }else{
+        } else {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 modifier = Modifier

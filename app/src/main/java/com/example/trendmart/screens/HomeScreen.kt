@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -34,12 +35,16 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -82,6 +87,7 @@ fun HomeScreen(navController: NavController) {
     val viewModel: MainViewModel = koinInject()
     val state by viewModel.allProdect.collectAsState()
     var filteredProducts by remember { mutableStateOf<List<ProdectItem>?>(null) }
+    var selectedTabIndex by remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
         viewModel.getAllProduct()
@@ -130,153 +136,176 @@ fun HomeScreen(navController: NavController) {
                     })
             }
         }, navigationIcon = {
-            Box(modifier = Modifier
-                .clip(CircleShape)
-                .width(32.dp)
-                .clickable { navController.navigate(Screen.MainScreen.route) }
-                .height(32.dp)
-                .background(Color.LightGray.copy(alpha = 0.70f)),
-                contentAlignment = Alignment.Center) {
-                Icon(imageVector = Icons.Default.Menu, contentDescription = "")
+            Row(
+                modifier = Modifier.wrapContentWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Box(modifier = Modifier.size(45.dp), contentAlignment = Alignment.Center) {
+                    Image(
+                        painter = painterResource(id = R.drawable.banner3),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
+                Spacer(modifier = Modifier.width(5.dp))
+
+
+                Column(
+                    modifier = Modifier.wrapContentWidth(),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(text = "Hi,Johnathon", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                    Text(text = "lets go shopping", fontSize = 12.sp, color = Color.Gray)
+                }
             }
         }, actions = {
-            Box(modifier = Modifier
-                .clip(CircleShape)
-                .width(32.dp)
-                .clickable { searchBar = true }
-                .height(32.dp)
-                .background(Color.LightGray.copy(alpha = 0.70f)),
-                contentAlignment = Alignment.Center) {
-                Icon(imageVector = Icons.Default.Search, contentDescription = "")
-            }
+            Icon(
+                imageVector = Icons.Outlined.Search,
+                contentDescription = "",
+                modifier = Modifier.clickable { searchBar = !searchBar })
+
+            Spacer(modifier = Modifier.width(20.dp))
+
+            Icon(imageVector = Icons.Outlined.Notifications, contentDescription = "")
+
+
         })
     }) { paddingValues ->
-        when (state) {
-            is ResultState.Error -> {
-                val error = (state as ResultState.Error).error
-                Text(text = error.toString(), modifier = Modifier.padding(paddingValues))
-            }
-
-            ResultState.Loading -> {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(60.dp),
-                        color = Color.LightGray,
-                        trackColor = Color.Red,
-                        strokeCap = StrokeCap.Butt
+        Column(modifier = Modifier.padding(paddingValues)) {
+            ScrollableTabRow(
+                selectedTabIndex = selectedTabIndex,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                categories.forEachIndexed { index, category ->
+                    Tab(
+                        selected = selectedTabIndex == index,
+                        onClick = { selectedTabIndex = index },
+                        text = { Text(category.name) }
                     )
                 }
             }
 
-            is ResultState.Success -> {
-                val products = filteredProducts ?: (state as ResultState.Success).response
+            when (state) {
+                is ResultState.Error -> {
+                    val error = (state as ResultState.Error).error
+                    Text(text = error.toString())
+                }
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                ) {
-                    Text(
-                        text = "Hello Fola",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                    Text(
-                        text = "Let’s start shopping!",
-                        color = Color(0x80000000),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                    val images = listOf(
-                        Banner(R.drawable.bags),
-                        Banner(R.drawable.login),
-                        Banner(R.drawable.backcolor),
-                    )
-                    val pagerState = rememberPagerState(pageCount = {
-
-                        images.size
-                    })
-
-                    HorizontalPager(
-                        state = pagerState,
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(100.dp)
-                                .background(Color.LightGray),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = images[0].pic),
-                                contentDescription = ""
-                            )
-                        }
-
-
-                    }
-
-
-
-                    Row(
-                        Modifier
-                            .wrapContentHeight()
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        repeat(pagerState.pageCount) { iteration ->
-                            val color =
-                                if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
-                            Box(
-                                modifier = Modifier
-                                    .padding(2.dp)
-                                    .clip(CircleShape)
-                                    .background(color)
-                                    .size(16.dp)
-                            )
-                        }
-                    }
-
-
-
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(7.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Top Products",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "",
-                            tint = Color(0XFFF17547),
-                            modifier = Modifier.size(30.dp)
+                ResultState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(60.dp),
+                            color = Color.LightGray,
+                            trackColor = Color.Red,
+                            strokeCap = StrokeCap.Butt
                         )
                     }
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(2),
+                }
+
+                is ResultState.Success -> {
+                    val allProducts = (state as ResultState.Success).response
+                    val products = filteredProducts ?: allProducts
+                    val filteredByCategory = if (selectedTabIndex == 0) {
+                        products
+                    } else {
+                        products?.filter { it.category == categories[selectedTabIndex].name }
+                    }
+
+                    Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 60.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        products?.let {
-                            items(it) { product ->
-                                ProdectItem(
-                                    prodectItem = product,
-                                    onSeeMoreClick = { product.title },
-                                    navController
+                        Spacer(modifier = Modifier.height(19.dp))
+                        val images = listOf(
+                            Banner(R.drawable.banner1),
+                            Banner(R.drawable.banner2),
+                            Banner(R.drawable.banner3),
+                        )
+                        val pagerState = rememberPagerState(pageCount = { images.size })
+
+
+                        HorizontalPager(
+                            state = pagerState,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) { page ->
+                            Box(
+                                modifier = Modifier
+                                    .width(400.dp)
+                                    .height(150.dp)
+                                    .background(Color.LightGray), contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(id = images[page].pic),
+                                    contentDescription = "",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
                                 )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Row(
+                            Modifier
+                                .wrapContentHeight()
+                                .fillMaxWidth()
+                                .padding(bottom = 8.dp),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            repeat(pagerState.pageCount) { iteration ->
+                                val color =
+                                    if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                                Box(
+                                    modifier = Modifier
+                                        .padding(4.dp)
+                                        .clip(CircleShape)
+                                        .background(color)
+                                        .size(8.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(7.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Top Products",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                text = "See All",
+                                fontSize = 13.sp,
+                                color = Color.Blue.copy(alpha = 0.70f)
+                            )
+                        }
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 60.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            filteredByCategory?.let {
+                                items(it) { product ->
+                                    ProdectItem(
+                                        prodectItem = product,
+                                        onSeeMoreClick = { product.title },
+                                        navController
+                                    )
+                                }
                             }
                         }
                     }
@@ -285,6 +314,7 @@ fun HomeScreen(navController: NavController) {
         }
     }
 }
+
 
 
 @Composable
@@ -389,3 +419,8 @@ data class Banner(
     val pic: Int
 )
 
+data class Category(val name: String)
+val categories = listOf(
+    Category("All"),
+    Category("Categroy"),
+)

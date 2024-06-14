@@ -6,19 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -29,34 +17,14 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.Tab
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -77,28 +45,46 @@ import com.example.trendmart.restapi.MainViewModel
 import com.example.trendmart.restapi.ProdectItem
 import com.example.trendmart.restapi.ResultState
 import com.example.trendmart.roomdatabase.Fav
+import com.google.accompanist.pager.ExperimentalPagerApi
 import org.koin.compose.koinInject
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalPagerApi::class
+)
 @Composable
 fun HomeScreen(navController: NavController) {
     var searchBar by remember { mutableStateOf(false) }
+    var notification by remember { mutableStateOf(false) }
     var search by remember { mutableStateOf("") }
     val viewModel: MainViewModel = koinInject()
     val state by viewModel.allProdect.collectAsState()
     var filteredProducts by remember { mutableStateOf<List<ProdectItem>?>(null) }
-    var selectedTabIndex by remember { mutableStateOf(0) }
+    var selectedCategoryIndex by remember { mutableStateOf(0) }
+
+    val uniqueCategories = remember(state) {
+        when (state) {
+            is ResultState.Success -> (state as ResultState.Success<List<ProdectItem>>).response.map { it.category }
+                .distinct()
+
+            else -> listOf("All")
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.getAllProduct()
         Log.d("HomeScreen", "Fetching products")
     }
 
-    LaunchedEffect(search) {
+    LaunchedEffect(search, selectedCategoryIndex) {
         filteredProducts = state.let { resultState ->
             when (resultState) {
-                is ResultState.Success -> resultState.response.filter {
-                    it.title.contains(search, ignoreCase = true)
+                is ResultState.Success -> {
+                    resultState.response.filter { product ->
+                        product.title.contains(
+                            search,
+                            ignoreCase = true
+                        ) && (selectedCategoryIndex == 0 || product.category == uniqueCategories[selectedCategoryIndex])
+                    }
                 }
 
                 else -> null
@@ -111,9 +97,7 @@ fun HomeScreen(navController: NavController) {
             if (searchBar) {
                 TextField(value = search,
                     onValueChange = { search = it },
-                    placeholder = {
-                        Text(text = "Search", fontSize = 15.sp)
-                    },
+                    placeholder = { Text(text = "Search", fontSize = 15.sp) },
                     modifier = Modifier
                         .padding(top = 10.dp, start = 5.dp)
                         .width(320.dp)
@@ -126,9 +110,7 @@ fun HomeScreen(navController: NavController) {
                         unfocusedIndicatorColor = Color.White
                     ),
                     singleLine = true,
-                    textStyle = TextStyle(
-                        fontSize = 15.sp
-                    ),
+                    textStyle = TextStyle(fontSize = 15.sp),
                     trailingIcon = {
                         Icon(imageVector = Icons.Default.Clear,
                             contentDescription = "",
@@ -141,7 +123,9 @@ fun HomeScreen(navController: NavController) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Start
             ) {
-                Box(modifier = Modifier.size(45.dp), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.size(45.dp), contentAlignment = Alignment.Center
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.banner3),
                         contentDescription = "",
@@ -153,40 +137,46 @@ fun HomeScreen(navController: NavController) {
                 }
                 Spacer(modifier = Modifier.width(5.dp))
 
-
                 Column(
                     modifier = Modifier.wrapContentWidth(),
                     verticalArrangement = Arrangement.SpaceBetween,
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(text = "Hi,Johnathon", fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-                    Text(text = "lets go shopping", fontSize = 12.sp, color = Color.Gray)
+                    Text(
+                        text = "Hi, Johnathon",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = "Lets go shopping", fontSize = 12.sp, color = Color.Gray
+                    )
                 }
             }
         }, actions = {
-            Icon(
-                imageVector = Icons.Outlined.Search,
+            Icon(imageVector = Icons.Outlined.Search,
                 contentDescription = "",
                 modifier = Modifier.clickable { searchBar = !searchBar })
 
             Spacer(modifier = Modifier.width(20.dp))
 
-            Icon(imageVector = Icons.Outlined.Notifications, contentDescription = "")
-
-
+            if (notification){
+                Icon(imageVector = Icons.Filled.Notifications, contentDescription = "", modifier = Modifier.clickable { notification=!notification }, tint = Color.Red)
+            } else{
+                Icon(imageVector = Icons.Outlined.Notifications, contentDescription = "", modifier = Modifier.clickable { notification=!notification })
+            }
         })
     }) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
-            ScrollableTabRow(
-                selectedTabIndex = selectedTabIndex,
-                modifier = Modifier.fillMaxWidth(),
+
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
-                categories.forEachIndexed { index, category ->
-                    Tab(
-                        selected = selectedTabIndex == index,
-                        onClick = { selectedTabIndex = index },
-                        text = { Text(category.name) }
-                    )
+                items(uniqueCategories) { category ->
+                    CategoryTab(categoryName = category,
+                        selected = category == uniqueCategories[selectedCategoryIndex],
+                        onClick = { selectedCategoryIndex = uniqueCategories.indexOf(category) })
                 }
             }
 
@@ -197,7 +187,9 @@ fun HomeScreen(navController: NavController) {
                 }
 
                 ResultState.Loading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                    ) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(60.dp),
                             color = Color.LightGray,
@@ -209,67 +201,28 @@ fun HomeScreen(navController: NavController) {
 
                 is ResultState.Success -> {
                     val allProducts = (state as ResultState.Success).response
-                    val products = filteredProducts ?: allProducts
-                    val filteredByCategory = if (selectedTabIndex == 0) {
-                        products
-                    } else {
-                        products?.filter { it.category == categories[selectedTabIndex].name }
-                    }
+                    val productsToDisplay = filteredProducts ?: allProducts
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
+                    Column(modifier = Modifier.fillMaxSize()) {
                         Spacer(modifier = Modifier.height(19.dp))
-                        val images = listOf(
+
+                        val bannerImages = listOf(
                             Banner(R.drawable.banner1),
                             Banner(R.drawable.banner2),
-                            Banner(R.drawable.banner3),
+                            Banner(R.drawable.banner3)
                         )
-                        val pagerState = rememberPagerState(pageCount = { images.size })
-
+                        val pagerState = rememberPagerState(pageCount = { bannerImages.size })
 
                         HorizontalPager(
                             state = pagerState,
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) { page ->
-                            Box(
-                                modifier = Modifier
-                                    .width(400.dp)
-                                    .height(150.dp)
-                                    .background(Color.LightGray), contentAlignment = Alignment.Center
-                            ) {
-                                Image(
-                                    painter = painterResource(id = images[page].pic),
-                                    contentDescription = "",
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
+                            BannerImage(bannerImages[page].pic)
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
-
-                        Row(
-                            Modifier
-                                .wrapContentHeight()
-                                .fillMaxWidth()
-                                .padding(bottom = 8.dp),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            repeat(pagerState.pageCount) { iteration ->
-                                val color =
-                                    if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
-                                Box(
-                                    modifier = Modifier
-                                        .padding(4.dp)
-                                        .clip(CircleShape)
-                                        .background(color)
-                                        .size(8.dp)
-                                )
-                            }
-                        }
+                        BannerDotsIndicator(pagerState)
 
                         Spacer(modifier = Modifier.height(10.dp))
                         Row(
@@ -290,6 +243,7 @@ fun HomeScreen(navController: NavController) {
                                 color = Color.Blue.copy(alpha = 0.70f)
                             )
                         }
+
                         LazyVerticalGrid(
                             columns = GridCells.Fixed(2),
                             modifier = Modifier
@@ -298,14 +252,12 @@ fun HomeScreen(navController: NavController) {
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            filteredByCategory?.let {
-                                items(it) { product ->
-                                    ProdectItem(
-                                        prodectItem = product,
-                                        onSeeMoreClick = { product.title },
-                                        navController
-                                    )
-                                }
+                            items(productsToDisplay) { product ->
+                                ProdectItem(
+                                    prodectItem = product,
+                                    onSeeMoreClick = { product.title },
+                                    navController = navController
+                                )
                             }
                         }
                     }
@@ -316,17 +268,86 @@ fun HomeScreen(navController: NavController) {
 }
 
 
+@Composable
+fun BannerImage(imageResource: Int) {
+    Box(
+        modifier = Modifier
+            .width(400.dp)
+            .height(150.dp)
+            .background(Color.LightGray),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = imageResource),
+            contentDescription = "",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class, ExperimentalFoundationApi::class)
+@Composable
+fun BannerDotsIndicator(pagerState: androidx.compose.foundation.pager.PagerState) {
+    Row(
+        Modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        repeat(pagerState.pageCount) { iteration ->
+            val color = if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+            Box(
+                modifier = Modifier
+                    .padding(4.dp)
+                    .clip(CircleShape)
+                    .background(color)
+                    .size(8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun CategoryTab(
+    categoryName: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .width(150.dp)
+            .padding(top = 10.dp, bottom = 6.dp)
+            .clickable(onClick = onClick),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = categoryName,
+            color = if (selected) Color.Blue.copy(alpha = 0.70f) else Color.Black,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
+        )
+        if (selected) {
+            Divider(
+                modifier = Modifier
+                    .padding(top = 4.dp)
+                    .wrapContentWidth(),
+                color = Color.Blue,
+                thickness = 2.dp
+            )
+        }
+    }
+}
+
 
 @Composable
 fun ProdectItem(
     prodectItem: ProdectItem, onSeeMoreClick: () -> Unit, navController: NavController
 ) {
     val viewModel: MainViewModel = koinInject()
-
-    var fav by remember {
-        mutableStateOf(false)
-    }
+    var fav by remember { mutableStateOf(false) }
     var showMore by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .width(174.dp)
@@ -357,31 +378,37 @@ fun ProdectItem(
                     modifier = Modifier
                         .clip(CircleShape)
                         .size(30.dp)
-                        .background(Color.LightGray.copy(alpha = 0.90f)),
+                        .background(Color.DarkGray.copy(alpha = 0.90f)),
                     contentAlignment = Alignment.Center
                 ) {
                     if (fav) {
                         Icon(imageVector = Icons.Default.Favorite,
                             contentDescription = "",
-                            tint = Color.Red,
-                            modifier = Modifier.clickable { fav = !fav })
+                            tint = Color.White,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(25.dp)
+                                .clickable { fav = !fav })
                     } else {
                         Icon(imageVector = Icons.Default.FavoriteBorder,
                             contentDescription = "",
-                            tint = Color.Red,
-                            modifier = Modifier.clickable {
-                                fav = !fav
-                                val favourite = Fav(
-                                    null,
-                                    prodectItem.image,
-                                    prodectItem.title,
-                                    prodectItem.price.toString(),
-                                    prodectItem.description,
-                                    prodectItem.rating.rate.toString(),
-                                    prodectItem.category
-                                )
-                                viewModel.Insert(favourite)
-                            })
+                            tint = Color.White,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(25.dp)
+                                .clickable {
+                                    fav = !fav
+                                    val favourite = Fav(
+                                        null,
+                                        prodectItem.image,
+                                        prodectItem.title,
+                                        prodectItem.price.toString(),
+                                        prodectItem.description,
+                                        prodectItem.rating.rate.toString(),
+                                        prodectItem.category
+                                    )
+                                    viewModel.Insert(favourite)
+                                })
                     }
 
                 }
@@ -415,12 +442,4 @@ fun ProdectItem(
     }
 }
 
-data class Banner(
-    val pic: Int
-)
-
-data class Category(val name: String)
-val categories = listOf(
-    Category("All"),
-    Category("Categroy"),
-)
+data class Banner(val pic: Int)

@@ -86,8 +86,7 @@ fun HomeScreen(navController: NavController) {
                 is ResultState.Success -> {
                     resultState.response.filter { product ->
                         product.title.contains(
-                            search,
-                            ignoreCase = true
+                            search, ignoreCase = true
                         ) && (selectedCategoryIndex == 0 || product.category == uniqueCategories[selectedCategoryIndex])
                     }
                 }
@@ -98,118 +97,111 @@ fun HomeScreen(navController: NavController) {
     }
 
     Scaffold(topBar = {
-        TopAppBar(
-            title = {
-                if (searchBar) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "", modifier = Modifier.clickable { searchBar=false })
-                        TextField(
-                            value = search,
-                            onValueChange = { search = it },
-                            placeholder = { Text(text = "Search", fontSize = 15.sp) },
-                            modifier = Modifier
-                                .padding()
-                                .fillMaxWidth()
-                                .height(52.dp),
-                            shape = RoundedCornerShape(10.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
-                                unfocusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
-                                focusedIndicatorColor = Color.White,
-                                unfocusedIndicatorColor = Color.White
-                            ),
-                            singleLine = true,
-                            textStyle = TextStyle(fontSize = 15.sp),
-                            trailingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Clear,
-                                    contentDescription = "",
-                                    modifier = Modifier.clickable { search ="" }
-                                )
-                            }
-                        )
-                    }
-                } else {
-
-                }
-            },
-            navigationIcon = {
-                if (!searchBar) {
-                    Row(
-                        modifier = Modifier.wrapContentWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        Box(
-                            modifier = Modifier.size(45.dp), contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.banner3),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Crop,
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(5.dp))
-
-                        Column(
-                            modifier = Modifier.wrapContentWidth(),
-                            verticalArrangement = Arrangement.SpaceBetween,
-                            horizontalAlignment = Alignment.Start
-                        ) {
-                            Text(
-                                text = "Hi, Johnathon",
-                                fontSize = 15.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Text(
-                                text = "Lets go shopping", fontSize = 12.sp, color = Color.Gray
-                            )
-                        }
-                    }
-                }
-            },
-            actions = {
-                if (searchBar) {
-
-                }else{
-                    Icon(
-                        imageVector = Icons.Outlined.Search,
+        TopAppBar(title = {
+            if (searchBar) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(imageVector = Icons.Default.ArrowBackIosNew,
                         contentDescription = "",
-                        modifier = Modifier.clickable { searchBar = true }
-                    )
-                }
+                        modifier = Modifier.clickable { searchBar = false })
+                    TextField(value = search,
+                        onValueChange = { search = it },
+                        placeholder = { Text(text = "Search", fontSize = 15.sp) },
+                        modifier = Modifier
+                            .padding()
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
+                            unfocusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
+                            focusedIndicatorColor = Color.White,
+                            unfocusedIndicatorColor = Color.White
+                        ),
+                        singleLine = true,
+                        textStyle = TextStyle(fontSize = 15.sp),
+                        trailingIcon = {
+                            if (search >= 0.toString()) {
+                                Icon(imageVector = Icons.Default.Clear,
+                                    contentDescription = "",
+                                    modifier = Modifier.clickable { search = "" })
+                            }
 
-                Spacer(modifier = Modifier.width(20.dp))
-                if (searchBar){
-
-                }else{
-                    if (notification) {
-                        Icon(
-                            imageVector = Icons.Filled.Notifications,
-                            contentDescription = "",
-                            modifier = Modifier.clickable { notification = !notification },
-                            tint = Color.Red
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Outlined.Notifications,
-                            contentDescription = "",
-                            modifier = Modifier.clickable { notification = !notification }
-                        )
-                    }
+                        })
                 }
+            } else {
 
             }
-        )
+        }, navigationIcon = {
+            if (!searchBar) {
+                Row(
+                    modifier = Modifier.wrapContentWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Box(
+                        modifier = Modifier.size(45.dp), contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.banner3),
+                            contentDescription = "",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop,
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(5.dp))
+
+                    Column(
+                        modifier = Modifier.wrapContentWidth(),
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = "Hi, Johnathon",
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = "Lets go shopping", fontSize = 12.sp, color = Color.Gray
+                        )
+                    }
+                }
+            }
+        }, actions = {
+            if (searchBar) {
+
+            } else {
+                Icon(imageVector = Icons.Outlined.Search,
+                    contentDescription = "",
+                    modifier = Modifier.clickable { searchBar = true })
+            }
+
+            Spacer(modifier = Modifier.width(20.dp))
+            if (searchBar) {
+
+            } else {
+                if (notification) {
+                    Icon(
+                        imageVector = Icons.Filled.Notifications,
+                        contentDescription = "",
+                        modifier = Modifier.clickable { notification = !notification },
+                        tint = Color.Red
+                    )
+                } else {
+                    Icon(imageVector = Icons.Outlined.Notifications,
+                        contentDescription = "",
+                        modifier = Modifier.clickable { notification = !notification })
+                }
+            }
+
+        })
     }) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
+        Column(modifier = Modifier.padding(top = paddingValues.calculateTopPadding())) {
 
 
             when (state) {
@@ -293,7 +285,7 @@ fun HomeScreen(navController: NavController) {
                             columns = GridCells.Fixed(2),
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 60.dp),
+                                .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 85.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
@@ -356,16 +348,13 @@ fun BannerDotsIndicator(pagerState: androidx.compose.foundation.pager.PagerState
 
 @Composable
 fun CategoryTab(
-    categoryName: String,
-    selected: Boolean,
-    onClick: () -> Unit
+    categoryName: String, selected: Boolean, onClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .width(150.dp)
             .padding(top = 10.dp, bottom = 6.dp)
-            .clickable(onClick = onClick),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .clickable(onClick = onClick), horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = categoryName,
@@ -387,9 +376,7 @@ fun CategoryTab(
 
 @Composable
 fun ProductItem(
-    productItem: ProdectItem,
-    onSeeMoreClick: () -> Unit,
-    navController: NavController
+    productItem: ProdectItem, onSeeMoreClick: () -> Unit, navController: NavController
 ) {
     val viewModel: MainViewModel = koinInject()
     var fav by remember { mutableStateOf(false) }
@@ -403,7 +390,7 @@ fun ProductItem(
                 val encodedImage = Uri.encode(productItem.image)
                 val encodedDescription = Uri.encode(productItem.description)
                 navController.navigate(
-                    "${Screen.ProductDetail.route}/${productItem.title}/$encodedImage/${productItem.price}/$encodedDescription/${productItem.category}/${productItem.rating}"
+                    "${Screen.ProductDetail.route}/${productItem.title}/$encodedImage/${productItem.price}/$encodedDescription/${productItem.category}/${productItem.rating.rate}"
                 )
             },
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
@@ -430,8 +417,7 @@ fun ProductItem(
                 IconButton(
                     onClick = {
                         isFavorited = !isFavorited
-                    },
-                    modifier = Modifier
+                    }, modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(8.dp)
                 ) {
@@ -443,8 +429,7 @@ fun ProductItem(
                             .background(
                                 color = if (isFavorited) Color(0xFFF44336) else Color.Gray.copy(
                                     alpha = 0.7f
-                                ),
-                                shape = CircleShape
+                                ), shape = CircleShape
                             )
                             .padding(4.dp)
                     )
@@ -469,9 +454,7 @@ fun ProductItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "$${productItem.price}",
-                    color = Color.Gray,
-                    fontSize = 14.sp
+                    text = "$${productItem.price}", color = Color.Gray, fontSize = 14.sp
                 )
 
                 Row(
@@ -485,9 +468,7 @@ fun ProductItem(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Add to Cart",
-                        color = Color.Gray,
-                        fontSize = 12.sp
+                        text = "Add to Cart", color = Color.Gray, fontSize = 12.sp
                     )
                 }
             }
@@ -517,8 +498,7 @@ fun ProductItem(
                             "${Screen.ProductDetail.route}/${productItem.title}/$encodedImage/${productItem.price}/$encodedDescription/${productItem.category}/${productItem.rating}"
                         )
                     },
-                    modifier = Modifier
-                        .padding(top = 8.dp),
+                    modifier = Modifier.padding(top = 8.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFF44336)
@@ -534,20 +514,16 @@ fun ProductItem(
 
 @Composable
 fun ProductList(
-    products: List<ProdectItem>,
-    navController: NavController
+    products: List<ProdectItem>, navController: NavController
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        contentPadding = PaddingValues(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(products) { product ->
             ProductItem(
-                productItem = product,
-                onSeeMoreClick = {
+                productItem = product, onSeeMoreClick = {
                     navController.navigate("productDetails/${product.id}")
-                },
-                navController = navController
+                }, navController = navController
             )
         }
     }

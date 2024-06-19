@@ -5,12 +5,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Shop
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Shop
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -30,7 +28,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.trendmart.login.Login
-import com.example.trendmart.login.MainScreen
 import com.example.trendmart.login.SignUp
 import com.example.trendmart.screens.AccountScreen
 import com.example.trendmart.screens.FavouriteScreen
@@ -74,7 +71,7 @@ fun Navigation(navController: NavHostController) {
             val des = it.arguments?.getString("des")
             val category = it.arguments?.getString("category")
             val rating = it.arguments?.getString("rating")
-            ProductDetail(navController = navController, tittle, pic, price, des, category, rating)
+            ProductDetail(navController = navController, tittle.toString(), pic.toString() , price.toString(), des.toString(), category.toString(), rating.toString())
         }
 
         composable(Screen.MyCard.route){

@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,8 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.example.trendmart.restapi.MainViewModel
-import org.koin.compose.koinInject
 
 @Composable
 fun ProductDetail(
@@ -93,176 +92,180 @@ fun ProductDetail(
             Text(text = "1/1")
         }
 
-        Column(
+        Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp)
                 .background(Color.LightGray.copy(alpha = 0.50f))
-                .padding(top = 40.dp, start = 10.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start
+            , shape = RoundedCornerShape(10.dp)
         ) {
-            Text(
-                text = "$tittle",
-                fontWeight = FontWeight.Medium,
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 15.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(3.dp)
+            Column(
+                modifier = Modifier.fillMaxSize().padding(top = 20.dp, start = 10.dp, end = 10.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
             ) {
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "",
-                    tint = Color(0XFFFCBF0C)
-                )
-
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "",
-                    tint = Color(0XFFFCBF0C)
-                )
-
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "",
-                    tint = Color(0XFFFCBF0C)
-                )
-
-                Icon(
-                    imageVector = Icons.Default.Star,
-                    contentDescription = "",
-                    tint = Color(0XFFFCBF0C)
-                )
-                Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "$category",
-                    modifier = Modifier.padding(end = 10.dp),
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold
+                    text = "$tittle",
+                    fontWeight = FontWeight.Medium,
                 )
-            }
-            Text(text = "$rating", modifier = Modifier.padding(start = 4.dp, top = 6.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 25.dp, start = 2.dp, end = 10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = "$$price", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
 
-                Text(
-                    text = "Available in stock", fontSize = 14.sp, fontWeight = FontWeight.SemiBold
-                )
-            }
-
-
-
-            Text(
-                text = "About",
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 30.dp)
-            )
-
-            Text(
-                text = "$des", modifier = Modifier.padding(top = 12.dp, start = 10.dp, end = 10.dp)
-            )
-
-
-            Row(
-                modifier = Modifier
-                    .clip(
-                        shape = RoundedCornerShape(
-                            topStart = 5.dp,
-                            topEnd = 5.dp,
-                            bottomStart = 5.dp,
-                            bottomEnd = 5.dp
-                        )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 15.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(3.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "",
+                        tint = Color(0XFFFCBF0C)
                     )
-                    .fillMaxWidth()
-                    .padding(top = 20.dp, start = 10.dp, end = 14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Box(
+
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "",
+                        tint = Color(0XFFFCBF0C)
+                    )
+
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "",
+                        tint = Color(0XFFFCBF0C)
+                    )
+
+                    Icon(
+                        imageVector = Icons.Default.Star,
+                        contentDescription = "",
+                        tint = Color(0XFFFCBF0C)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "$category",
+                        modifier = Modifier.padding(end = 10.dp),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+                Text(text = "$rating", modifier = Modifier.padding(start = 4.dp, top = 6.dp))
+                Row(
                     modifier = Modifier
-                        .width(44.dp)
-                        .height(43.dp)
-                        .background(Color.White),
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth()
+                        .padding(top = 25.dp, start = 2.dp, end = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "35")
+                    Text(text = "$$price", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+
+                    Text(
+                        text = "Available in stock",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
 
-                Box(
+
+
+                Text(
+                    text = "About",
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 30.dp)
+                )
+
+                Text(
+                    text = "$des",
+                    modifier = Modifier.padding(top = 12.dp, start = 10.dp, end = 10.dp)
+                )
+
+
+                Row(
                     modifier = Modifier
-                        .width(44.dp)
-                        .height(43.dp)
-                        .background(Color.White),
-                    contentAlignment = Alignment.Center
+                        .clip(
+                            shape = RoundedCornerShape(
+                                topStart = 5.dp, topEnd = 5.dp, bottomStart = 5.dp, bottomEnd = 5.dp
+                            )
+                        )
+                        .fillMaxWidth()
+                        .padding(top = 20.dp, start = 10.dp, end = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "36")
+                    Box(
+                        modifier = Modifier
+                            .width(44.dp)
+                            .height(43.dp)
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "35")
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .width(44.dp)
+                            .height(43.dp)
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "36")
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .width(44.dp)
+                            .height(43.dp)
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "37")
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .width(44.dp)
+                            .height(43.dp)
+                            .background(Color.Yellow),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "38")
+                    }
+                    Box(
+                        modifier = Modifier
+                            .width(44.dp)
+                            .height(43.dp)
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "39")
+                    }
+                    Box(
+                        modifier = Modifier
+                            .width(44.dp)
+                            .height(43.dp)
+                            .background(Color.White),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = "40")
+                    }
                 }
 
-                Box(
+                Button(
+                    onClick = {
+                        Toast.makeText(context, "Add To Card SuccessFully", Toast.LENGTH_SHORT)
+                            .show()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0XFFF16A26)),
                     modifier = Modifier
-                        .width(44.dp)
-                        .height(43.dp)
-                        .background(Color.White),
-                    contentAlignment = Alignment.Center
+                        .fillMaxWidth()
+                        .height(90.dp)
+                        .align(Alignment.CenterHorizontally)
+                        .padding(20.dp),
+                    shape = RoundedCornerShape(15.dp),
                 ) {
-                    Text(text = "37")
+                    Text(text = "Add To Card")
                 }
 
-                Box(
-                    modifier = Modifier
-                        .width(44.dp)
-                        .height(43.dp)
-                        .background(Color.Yellow),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "38")
-                }
-                Box(
-                    modifier = Modifier
-                        .width(44.dp)
-                        .height(43.dp)
-                        .background(Color.White),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "39")
-                }
-                Box(
-                    modifier = Modifier
-                        .width(44.dp)
-                        .height(43.dp)
-                        .background(Color.White),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "40")
-                }
             }
-
-            Button(
-                onClick = {
-                    Toast.makeText(context, "Add To Card SuccessFully", Toast.LENGTH_SHORT).show()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0XFFF16A26)),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(90.dp)
-                    .align(Alignment.CenterHorizontally)
-                    .padding(20.dp),
-                shape = RoundedCornerShape(15.dp),
-            ) {
-                Text(text = "Add To Card")
-            }
-
         }
     }
 }

@@ -18,6 +18,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -97,81 +98,118 @@ fun HomeScreen(navController: NavController) {
     }
 
     Scaffold(topBar = {
-        TopAppBar(title = {
-            if (searchBar) {
-                TextField(value = search,
-                    onValueChange = { search = it },
-                    placeholder = { Text(text = "Search", fontSize = 15.sp) },
-                    modifier = Modifier
-                        .padding(top = 10.dp, start = 5.dp)
-                        .width(320.dp)
-                        .height(52.dp),
-                    shape = RoundedCornerShape(10.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
-                        unfocusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
-                        focusedIndicatorColor = Color.White,
-                        unfocusedIndicatorColor = Color.White
-                    ),
-                    singleLine = true,
-                    textStyle = TextStyle(fontSize = 15.sp),
-                    trailingIcon = {
-                        Icon(imageVector = Icons.Default.Clear,
-                            contentDescription = "",
-                            modifier = Modifier.clickable { searchBar = false })
-                    })
-            }
-        }, navigationIcon = {
-            Row(
-                modifier = Modifier.wrapContentWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Start
-            ) {
-                Box(
-                    modifier = Modifier.size(45.dp), contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.banner3),
+        TopAppBar(
+            title = {
+                if (searchBar) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "", modifier = Modifier.clickable { searchBar=false })
+                        TextField(
+                            value = search,
+                            onValueChange = { search = it },
+                            placeholder = { Text(text = "Search", fontSize = 15.sp) },
+                            modifier = Modifier
+                                .padding()
+                                .fillMaxWidth()
+                                .height(52.dp),
+                            shape = RoundedCornerShape(10.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
+                                unfocusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
+                                focusedIndicatorColor = Color.White,
+                                unfocusedIndicatorColor = Color.White
+                            ),
+                            singleLine = true,
+                            textStyle = TextStyle(fontSize = 15.sp),
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "",
+                                    modifier = Modifier.clickable { search ="" }
+                                )
+                            }
+                        )
+                    }
+                } else {
+
+                }
+            },
+            navigationIcon = {
+                if (!searchBar) {
+                    Row(
+                        modifier = Modifier.wrapContentWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Box(
+                            modifier = Modifier.size(45.dp), contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.banner3),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop,
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(5.dp))
+
+                        Column(
+                            modifier = Modifier.wrapContentWidth(),
+                            verticalArrangement = Arrangement.SpaceBetween,
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Text(
+                                text = "Hi, Johnathon",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                text = "Lets go shopping", fontSize = 12.sp, color = Color.Gray
+                            )
+                        }
+                    }
+                }
+            },
+            actions = {
+                if (searchBar) {
+
+                }else{
+                    Icon(
+                        imageVector = Icons.Outlined.Search,
                         contentDescription = "",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.clickable { searchBar = true }
                     )
                 }
-                Spacer(modifier = Modifier.width(5.dp))
 
-                Column(
-                    modifier = Modifier.wrapContentWidth(),
-                    verticalArrangement = Arrangement.SpaceBetween,
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Text(
-                        text = "Hi, Johnathon",
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Text(
-                        text = "Lets go shopping", fontSize = 12.sp, color = Color.Gray
-                    )
+                Spacer(modifier = Modifier.width(20.dp))
+                if (searchBar){
+
+                }else{
+                    if (notification) {
+                        Icon(
+                            imageVector = Icons.Filled.Notifications,
+                            contentDescription = "",
+                            modifier = Modifier.clickable { notification = !notification },
+                            tint = Color.Red
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Outlined.Notifications,
+                            contentDescription = "",
+                            modifier = Modifier.clickable { notification = !notification }
+                        )
+                    }
                 }
-            }
-        }, actions = {
-            Icon(imageVector = Icons.Outlined.Search,
-                contentDescription = "",
-                modifier = Modifier.clickable { searchBar = !searchBar })
 
-            Spacer(modifier = Modifier.width(20.dp))
-
-            if (notification){
-                Icon(imageVector = Icons.Filled.Notifications, contentDescription = "", modifier = Modifier.clickable { notification=!notification }, tint = Color.Red)
-            } else{
-                Icon(imageVector = Icons.Outlined.Notifications, contentDescription = "", modifier = Modifier.clickable { notification=!notification })
             }
-        })
+        )
     }) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
-
 
 
             when (state) {
@@ -207,7 +245,9 @@ fun HomeScreen(navController: NavController) {
                             items(uniqueCategories) { category ->
                                 CategoryTab(categoryName = category,
                                     selected = category == uniqueCategories[selectedCategoryIndex],
-                                    onClick = { selectedCategoryIndex = uniqueCategories.indexOf(category) })
+                                    onClick = {
+                                        selectedCategoryIndex = uniqueCategories.indexOf(category)
+                                    })
                             }
                         }
 
@@ -258,11 +298,11 @@ fun HomeScreen(navController: NavController) {
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(productsToDisplay) { product ->
-                             ProductItem(
-                                 productItem = product,
-                                 onSeeMoreClick = {product.title},
-                                 navController = navController
-                             )
+                                ProductItem(
+                                    productItem = product,
+                                    onSeeMoreClick = { product.title },
+                                    navController = navController
+                                )
                             }
                         }
                     }

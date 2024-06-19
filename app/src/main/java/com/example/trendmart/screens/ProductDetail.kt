@@ -1,8 +1,10 @@
 package com.example.trendmart.screens
 
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,25 +21,37 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Minimize
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.isCtrlPressed
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProductDetail(
     navController: NavController,
@@ -49,9 +63,18 @@ fun ProductDetail(
     rating: String?,
 
     ) {
+    val sizes = listOf(35, 36, 37, 38, 39, 40)
+    var selectedSize by remember { mutableStateOf(38) }
 
+    var i = 0
+    while (i in (1..10)) {
+        i++
+
+    }
+    var count by remember { mutableStateOf(0) }
     val scroll = rememberScrollState()
     val context = LocalContext.current
+
 
     Column(
         modifier = Modifier
@@ -63,8 +86,10 @@ fun ProductDetail(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 5.dp, end = 5.dp, bottom = 14.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(modifier = Modifier
@@ -76,6 +101,11 @@ fun ProductDetail(
                 contentAlignment = Alignment.Center) {
                 Icon(imageVector = Icons.Default.ArrowBackIosNew, contentDescription = "")
             }
+
+            Text(text = "Product Detail", fontSize = 17.sp, fontWeight = FontWeight.W500)
+
+            Icon(imageVector = Icons.Outlined.ShoppingBag, contentDescription = "")
+
         }
         AsyncImage(
             model = pic, contentDescription = "", modifier = Modifier.size(350.dp)
@@ -92,14 +122,17 @@ fun ProductDetail(
             Text(text = "1/1")
         }
 
+        Spacer(modifier = Modifier.height(10.dp))
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.LightGray.copy(alpha = 0.50f))
-            , shape = RoundedCornerShape(10.dp)
+                .background(Color.LightGray.copy(alpha = 0.50f)),
+            shape = RoundedCornerShape(10.dp)
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(top = 20.dp, start = 10.dp, end = 10.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 20.dp, start = 10.dp, end = 10.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.Start
             ) {
@@ -178,74 +211,69 @@ fun ProductDetail(
                 )
 
 
+
+
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    Text(text = "Choose amount:", fontSize = 20.sp)
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Color.LightGray)
+                            .padding(vertical = 8.dp, horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(imageVector = Icons.Default.Add,
+                            contentDescription = "Add",
+                            modifier = Modifier.clickable { count++ })
+
+                        Text(text = "$count", fontSize = 20.sp)
+
+                        Icon(imageVector = Icons.Default.Minimize,
+                            contentDescription = "Subtract",
+                            modifier = Modifier
+                                .combinedClickable(onClick = {
+                                    if (count > 0) {
+                                        count--
+                                    }
+                                }, onLongClick = {
+                                    count = 0
+                                })
+                                .padding(bottom = 13.dp))
+                    }
+                }
+
+
+
+
                 Row(
                     modifier = Modifier
-                        .clip(
-                            shape = RoundedCornerShape(
-                                topStart = 5.dp, topEnd = 5.dp, bottomStart = 5.dp, bottomEnd = 5.dp
-                            )
-                        )
+                        .clip(RoundedCornerShape(5.dp))
                         .fillMaxWidth()
                         .padding(top = 20.dp, start = 10.dp, end = 14.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .width(44.dp)
-                            .height(43.dp)
-                            .background(Color.White),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "35")
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .width(44.dp)
-                            .height(43.dp)
-                            .background(Color.White),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "36")
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .width(44.dp)
-                            .height(43.dp)
-                            .background(Color.White),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "37")
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .width(44.dp)
-                            .height(43.dp)
-                            .background(Color.Yellow),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "38")
-                    }
-                    Box(
-                        modifier = Modifier
-                            .width(44.dp)
-                            .height(43.dp)
-                            .background(Color.White),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "39")
-                    }
-                    Box(
-                        modifier = Modifier
-                            .width(44.dp)
-                            .height(43.dp)
-                            .background(Color.White),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = "40")
+                    sizes.forEach { size ->
+                        Box(
+                            modifier = Modifier
+                                .width(44.dp)
+                                .height(43.dp)
+                                .background(if (size == selectedSize) Color.Yellow else Color.White)
+                                .clickable { selectedSize = size },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = "$size")
+                        }
                     }
                 }
 

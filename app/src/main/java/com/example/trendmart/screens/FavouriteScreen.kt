@@ -171,7 +171,7 @@ fun FavouriteScreen(navController: NavController) {
                 Icon(imageVector = Icons.Outlined.Commit, contentDescription = "")
             }, leadingIcon = {
                 Icon(imageVector = Icons.Outlined.Search, contentDescription = "")
-            })
+            }, singleLine = true)
 
         }
 

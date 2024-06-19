@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -21,6 +22,9 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
@@ -168,17 +172,7 @@ fun HomeScreen(navController: NavController) {
     }) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
 
-            LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                items(uniqueCategories) { category ->
-                    CategoryTab(categoryName = category,
-                        selected = category == uniqueCategories[selectedCategoryIndex],
-                        onClick = { selectedCategoryIndex = uniqueCategories.indexOf(category) })
-                }
-            }
+
 
             when (state) {
                 is ResultState.Error -> {
@@ -205,6 +199,17 @@ fun HomeScreen(navController: NavController) {
 
                     Column(modifier = Modifier.fillMaxSize()) {
                         Spacer(modifier = Modifier.height(19.dp))
+                        LazyRow(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = 16.dp)
+                        ) {
+                            items(uniqueCategories) { category ->
+                                CategoryTab(categoryName = category,
+                                    selected = category == uniqueCategories[selectedCategoryIndex],
+                                    onClick = { selectedCategoryIndex = uniqueCategories.indexOf(category) })
+                            }
+                        }
 
                         val bannerImages = listOf(
                             Banner(R.drawable.banner1),
@@ -253,11 +258,11 @@ fun HomeScreen(navController: NavController) {
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(productsToDisplay) { product ->
-                                ProdectItem(
-                                    prodectItem = product,
-                                    onSeeMoreClick = { product.title },
-                                    navController = navController
-                                )
+                             ProductItem(
+                                 productItem = product,
+                                 onSeeMoreClick = {product.title},
+                                 navController = navController
+                             )
                             }
                         }
                     }
@@ -341,103 +346,169 @@ fun CategoryTab(
 
 
 @Composable
-fun ProdectItem(
-    prodectItem: ProdectItem, onSeeMoreClick: () -> Unit, navController: NavController
+fun ProductItem(
+    productItem: ProdectItem,
+    onSeeMoreClick: () -> Unit,
+    navController: NavController
 ) {
     val viewModel: MainViewModel = koinInject()
     var fav by remember { mutableStateOf(false) }
-    var showMore by remember { mutableStateOf(false) }
+    var isFavorited by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
-            .width(174.dp)
-            .height(224.dp),
-        colors = CardDefaults.cardColors(Color.LightGray.copy(alpha = 0.40f)),
-        shape = RoundedCornerShape(15.dp)
+            .width(200.dp)
+            .padding(8.dp)
+            .clickable {
+                val encodedImage = Uri.encode(productItem.image)
+                val encodedDescription = Uri.encode(productItem.description)
+                navController.navigate(
+                    "${Screen.ProductDetail.route}/${productItem.title}/$encodedImage/${productItem.price}/$encodedDescription/${productItem.category}/${productItem.rating}"
+                )
+            },
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
+        shape = RoundedCornerShape(16.dp)
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            Box {
-                AsyncImage(model = prodectItem.image,
-                    contentDescription = "",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .width(175.dp)
-                        .clickable {
-                            val encodedImage = Uri.encode(prodectItem.image)
-                            val encodedDescription = Uri.encode(prodectItem.description)
-                            navController.navigate(
-                                "${Screen.ProductDetail.route}/${prodectItem.title}/$encodedImage/${prodectItem.price}/$encodedDescription/${prodectItem.category}/${prodectItem.rating.rate}"
-                            )
-                        }
-                        .height(118.dp))
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(30.dp)
-                        .background(Color.DarkGray.copy(alpha = 0.90f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (fav) {
-                        Icon(imageVector = Icons.Default.Favorite,
-                            contentDescription = "",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(25.dp)
-                                .clickable { fav = !fav })
-                    } else {
-                        Icon(imageVector = Icons.Default.FavoriteBorder,
-                            contentDescription = "",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(25.dp)
-                                .clickable {
-                                    fav = !fav
-                                    val favourite = Fav(
-                                        null,
-                                        prodectItem.image,
-                                        prodectItem.title,
-                                        prodectItem.price.toString(),
-                                        prodectItem.description,
-                                        prodectItem.rating.rate.toString(),
-                                        prodectItem.category
-                                    )
-                                    viewModel.Insert(favourite)
-                                })
-                    }
-
-                }
-            }
-
-            Text(
-                text = if (showMore) prodectItem.title else prodectItem.title.take(15) + "...",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                maxLines = if (showMore) Int.MAX_VALUE else 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "$${prodectItem.price}",
+            Box(
                 modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(start = 5.dp)
-            )
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+            ) {
+                AsyncImage(
+                    model = productItem.image,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
 
-            if (!showMore) {
-                TextButton(onClick = { showMore = true }) {
-                    Text("See More")
-                }
-            } else {
-                TextButton(onClick = onSeeMoreClick) {
-                    Text("See Details")
+
+                IconButton(
+                    onClick = {
+                        isFavorited = !isFavorited
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = if (isFavorited) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = if (isFavorited) "Remove from Favorites" else "Add to Favorites",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .background(
+                                color = if (isFavorited) Color(0xFFF44336) else Color.Gray.copy(
+                                    alpha = 0.7f
+                                ),
+                                shape = CircleShape
+                            )
+                            .padding(4.dp)
+                    )
                 }
             }
+
+            Text(
+                text = productItem.title,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "$${productItem.price}",
+                    color = Color.Gray,
+                    fontSize = 14.sp
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ShoppingCart,
+                        contentDescription = "Add to Cart",
+                        tint = Color.Gray,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Add to Cart",
+                        color = Color.Gray,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Star,
+                        contentDescription = "Rating",
+                        tint = Color.Yellow,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+
+                Button(
+                    onClick = {
+                        val encodedImage = Uri.encode(productItem.image)
+                        val encodedDescription = Uri.encode(productItem.description)
+                        navController.navigate(
+                            "${Screen.ProductDetail.route}/${productItem.title}/$encodedImage/${productItem.price}/$encodedDescription/${productItem.category}/${productItem.rating}"
+                        )
+                    },
+                    modifier = Modifier
+                        .padding(top = 8.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFF44336)
+                    )
+                ) {
+                    Text("See Details", color = Color.White)
+                }
+            }
+
+        }
+    }
+}
+
+@Composable
+fun ProductList(
+    products: List<ProdectItem>,
+    navController: NavController
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(products) { product ->
+            ProductItem(
+                productItem = product,
+                onSeeMoreClick = {
+                    navController.navigate("productDetails/${product.id}")
+                },
+                navController = navController
+            )
         }
     }
 }

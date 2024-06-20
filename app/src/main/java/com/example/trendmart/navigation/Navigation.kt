@@ -78,10 +78,6 @@ fun Navigation(navController: NavHostController) {
             MyCard(navController)
         }
         
-       /* composable(Screen.MainScreen.route){
-            MainScreen(navController = navController)
-        }*/
-        
         composable(Screen.SignUp.route){
             SignUp(navController = navController)
         }
@@ -89,6 +85,7 @@ fun Navigation(navController: NavHostController) {
         composable(Screen.Login.route){
             Login(navController = navController)
         }
+
 
     }
 }
@@ -177,6 +174,7 @@ sealed class Screen(
         selectedIcon = Icons.Filled.AccountCircle,
         unselectedIcon = Icons.Outlined.AccountCircle
     )
+
 
 }
 

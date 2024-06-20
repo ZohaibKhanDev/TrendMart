@@ -113,7 +113,7 @@ fun HomeScreen(navController: NavController) {
                         modifier = Modifier
                             .padding()
                             .fillMaxWidth()
-                            .height(52.dp),
+                            .height(50.dp),
                         shape = RoundedCornerShape(10.dp),
                         colors = TextFieldDefaults.colors(
                             focusedContainerColor = Color.LightGray.copy(alpha = 0.60f),
@@ -277,8 +277,8 @@ fun HomeScreen(navController: NavController) {
                             Text(
                                 text = "See All",
                                 fontSize = 13.sp,
-                                color = Color.Blue.copy(alpha = 0.70f)
-                            )
+                                color = Color.Blue.copy(alpha = 0.70f),
+                                )
                         }
 
                         LazyVerticalGrid(
